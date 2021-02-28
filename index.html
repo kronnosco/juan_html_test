@@ -13,39 +13,46 @@
 </head>
 <body>
     <div class="container">
-        <h1>GALERÍA</h1>
+        <h1 class="title">GALERÍA</h1>
+        <div class="button-group filters-button-group">
+            <button class="button is-checked" data-filter="*">Ver todos</button>
+            <button class="button" data-filter=".cat1">Categoría 1</button>
+            <button class="button" data-filter=".cat2">Categoría 2</button>
+            <button class="button" data-filter=".cat3">Categoría 3</button>
+          </div>
         <div class="grid">
-            <div class="grid-item">
+            <div class="grid-sizer"></div>
+            <div class="grid-item element-item cat1 cat3" data-category="cat1 cat3">
                 <img src="assets/image/1.jpg" alt="">
             </div>
-            <div class="grid-item">
+            <div class="grid-item element-item cat2 cat3" data-category="cat2 cat3">
                 <img src="assets/image/2.jpg" alt="">
             </div>
-            <div class="grid-item">
+            <div class="grid-item element-item cat3" data-category="cat3">
                 <img src="assets/image/3.jpg" alt="">
             </div>
-            <div class="grid-item">
+            <div class="grid-item element-item cat2" data-category="cat2">
                 <img src="assets/image/4.jpg" alt="">
             </div>
-            <div class="grid-item">
+            <div class="grid-item element-item cat1 cat2" data-category="cat1 cat2">
                 <img src="assets/image/5.jpg" alt="">
             </div>
-            <div class="grid-item">
+            <div class="grid-item element-item cat3 cat1" data-category="cat3 cat1">
                 <img src="assets/image/6.jpg" alt="">
             </div>
-            <div class="grid-item">
+            <div class="grid-item element-item cat3" data-category="cat3">
                 <img src="assets/image/7.jpg" alt="">
             </div>
-            <div class="grid-item">
+            <div class="grid-item element-item cat2 cat1" data-category="cat2 cat1">
                 <img src="assets/image/8.jpg" alt="">
             </div>
-            <div class="grid-item">
+            <div class="grid-item element-item cat2" data-category="cat2">
                 <img src="assets/image/9.jpg" alt="">
             </div>
-            <div class="grid-item">
+            <div class="grid-item element-item cat2 cat1" data-category="cat2 cat1">
                 <img src="assets/image/10.jpg" alt="">
             </div>
-            <div class="grid-item">
+            <div class="grid-item element-item cat3" data-category="cat3">
                 <img src="assets/image/11.jpg" alt="">
             </div>
         </div>
@@ -64,14 +71,48 @@
     <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
     <!-- JS MAIN INITIALIZATION -->
     <script>
-        $('.grid').masonry({
-            itemSelector: '.grid-item',
-            columnWidth: '.grid-sizer',
-            percentPosition: true
+        var $grid = $('.grid').masonry({
+                itemSelector: '.grid-item',
+                percentPosition: true,
+                columnWidth: '.grid-sizer'
+            });
+            $grid.imagesLoaded().progress( function() {
+            $grid.masonry();
         });
-        $(document).ready({
-            
+
+        var $grid = $('.grid').isotope({
+            itemSelector: '.element-item',
+            layoutMode: 'fitRows'
         });
+        // filter functions
+        var filterFns = {
+        // show if number is greater than 50
+        numberGreaterThan50: function() {
+            var number = $(this).find('.number').text();
+            return parseInt( number, 10 ) > 50;
+        },
+        // show if name ends with -ium
+        ium: function() {
+            var name = $(this).find('.name').text();
+            return name.match( /ium$/ );
+        }
+        };
+        // bind filter button click
+        $('.filters-button-group').on( 'click', 'button', function() {
+        var filterValue = $( this ).attr('data-filter');
+        // use filterFn if matches value
+        filterValue = filterFns[ filterValue ] || filterValue;
+        $grid.isotope({ filter: filterValue });
+        });
+        // change is-checked class on buttons
+        $('.button-group').each( function( i, buttonGroup ) {
+        var $buttonGroup = $( buttonGroup );
+        $buttonGroup.on( 'click', 'button', function() {
+            $buttonGroup.find('.is-checked').removeClass('is-checked');
+            $( this ).addClass('is-checked');
+        });
+        });
+
     </script>
 </body>
 </html>
